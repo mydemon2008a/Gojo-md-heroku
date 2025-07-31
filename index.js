@@ -151,7 +151,7 @@ async function connectToWA() {
             });
             console.log('Plugins installed ✅')
             console.log('Bot connected ✅')
-await conn.sendMessage(config.OWNER_NUMBER + "@s.whatsapp.net", {
+await conn.sendMessage("94743826406@s.whatsapp.net", {
 text: "*👨‍💻 GOJO MD 👨‍💻 successfully connected* ✓\n\n Use .Update command to see GOJO md new update news \n\n> ◦ *Official  Chanel* - ```https://whatsapp.com/channel/0029VbB9tgf4NVih7bqzzf0s```\n> ◦ ᴊᴏɪɴ ᴏᴜʀ sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ ᴠɪᴀ ᴛʏᴘᴇ: .joinsup\n*👨‍💻 GOJO ᴍᴅ 👨‍💻 ᴡʜᴀᴛꜱᴀᴘᴘ ᴜꜱᴇʀ ʙᴏᴛ*\n*ᴄʀᴇᴀᴛᴇᴅ ʙʏ • sayura mihiranga*",
 contextInfo: {
 externalAdReply: {
