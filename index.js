@@ -23,8 +23,8 @@ const FileType = require('file-type')
 const moment = require('moment-timezone')
 const l = console.log
 var config = require('./settings')
-// gojo.js එක require කරනවා
-require('./gojo')
+// 
+
 
 // Other requires and bot setup lines (if any)
 
@@ -983,5 +983,8 @@ app.listen(port, () => console.log(`gojo-Md Server listening on port http://loca
 setTimeout(() => {
 connectToWA()
 }, 3000);
+    
+    
+
     
     
