@@ -3,12 +3,13 @@ const path = require('path');
 const axios = require('axios');
 const AdmZip = require('adm-zip');
 
-// ZIP එක බාගෙන, Extract කරලා Plugins load කරන function එක
+// ZIP එක බාගෙන, Extract කරලා Plugins load කරලා index.js run කරන function එක
 async function downloadAndExtractZip(zipUrl) {
   const zipPath = path.join(__dirname, 'temp.zip');
   const extractPath = __dirname;
 
   try {
+    // ZIP එක බාගන්න
     const response = await axios({
       method: 'GET',
       url: zipUrl,
@@ -25,16 +26,16 @@ async function downloadAndExtractZip(zipUrl) {
 
     console.log('✅ ZIP එක බාගත්තා.');
 
-    // Extract ZIP
+    // ZIP එක extract කරන්න
     const zip = new AdmZip(zipPath);
     zip.extractAllTo(extractPath, true);
     console.log('✅ ZIP එක extract කරා.');
 
-    // Delete temp.zip
+    // temp.zip delete කරන්න
     fs.unlinkSync(zipPath);
     console.log('🗑️ ZIP file එක delete කරා.');
 
-    // Load plugins
+    // plugins load කරන්න
     const pluginDir = path.join(__dirname, 'plugins');
     if (fs.existsSync(pluginDir)) {
       const plugins = fs.readdirSync(pluginDir).filter(f => f.endsWith('.js'));
@@ -53,6 +54,15 @@ async function downloadAndExtractZip(zipUrl) {
       }
     } else {
       console.warn('⚠️ plugins folder එක හමු නොවුණා!');
+    }
+
+    // ✅ index.js run කරන්න (plugins load වෙලාම පස්සේ)
+    const indexPath = path.join(__dirname, 'index.js');
+    if (fs.existsSync(indexPath)) {
+      console.log('🚀 index.js එක run කරමින්...');
+      require(indexPath);
+    } else {
+      console.warn('⚠️ index.js එක හමු නොවුණා!');
     }
 
     console.log('🚀 Bot system ready.');
