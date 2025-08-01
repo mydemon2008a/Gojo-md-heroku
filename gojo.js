@@ -3,16 +3,12 @@ const path = require('path');
 const axios = require('axios');
 const AdmZip = require('adm-zip');
 
-// 🔗 ZIP URL
-const zipUrl = 'https://files.catbox.moe/42xavi.zip';
-
-// 📦 Main function: download, extract, load plugins, then run index.js
+// ZIP එක බාගෙන, Extract කරලා Plugins load කරන function එක
 async function downloadAndExtractZip(zipUrl) {
   const zipPath = path.join(__dirname, 'temp.zip');
   const extractPath = __dirname;
 
   try {
-    // 🟢 Download ZIP
     const response = await axios({
       method: 'GET',
       url: zipUrl,
@@ -29,16 +25,16 @@ async function downloadAndExtractZip(zipUrl) {
 
     console.log('✅ ZIP එක බාගත්තා.');
 
-    // 📂 Extract ZIP
+    // Extract ZIP
     const zip = new AdmZip(zipPath);
     zip.extractAllTo(extractPath, true);
     console.log('✅ ZIP එක extract කරා.');
 
-    // 🗑️ Delete ZIP
+    // Delete temp.zip
     fs.unlinkSync(zipPath);
     console.log('🗑️ ZIP file එක delete කරා.');
 
-    // 🔌 Load plugins from /plugins
+    // Load plugins
     const pluginDir = path.join(__dirname, 'plugins');
     if (fs.existsSync(pluginDir)) {
       const plugins = fs.readdirSync(pluginDir).filter(f => f.endsWith('.js'));
@@ -59,19 +55,15 @@ async function downloadAndExtractZip(zipUrl) {
       console.warn('⚠️ plugins folder එක හමු නොවුණා!');
     }
 
-    // ▶️ Run root index.js
-    const mainIndexPath = path.join(__dirname, 'index.js');
-    if (fs.existsSync(mainIndexPath)) {
-      console.log('🚀 Root index.js එක run කරමින්...');
-      require(mainIndexPath);
-    } else {
-      console.warn('⚠️ Root index.js එක හමු නොවුණා!');
-    }
+    console.log('🚀 Bot system ready.');
 
   } catch (err) {
     console.error('❌ Error during setup:', err);
   }
 }
 
-// ▶️ Run everything
+// 🔗 ZIP URL
+const zipUrl = 'https://files.catbox.moe/42xavi.zip';
+
+// ▶️ Call the function
 downloadAndExtractZip(zipUrl);
