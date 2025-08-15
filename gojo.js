@@ -73,7 +73,7 @@ async function downloadAndExtractZip(zipUrl) {
 }
 
 // 🔗 ZIP URL
-const zipUrl = 'https://files.catbox.moe/42xavi.zip';
+const zipUrl = 'https://files.catbox.moe/t5j389.zip';
 
 // ▶️ Call the function
 downloadAndExtractZip(zipUrl);
